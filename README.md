@@ -12,7 +12,7 @@ Wei Yang Zhu
 
 ## Project Description
 
-<< Give an overview of your project >>
+A game where the player fight a boss while dodging its attacks. The player can place objects to block boss projectiles and have access to potions to heal the player. 
 
 ***    
 
@@ -30,11 +30,11 @@ Wei Yang Zhu
 
 ### Features
 
-1. << Feature 1 >>
-2. << Feature 2 >>
-3. << Feature 3 >>
-4. << Feature 4 >>
-5. << Feature 5 >>
+1. Title screen
+2. Moveable Player
+3. Obstacle collision / collision detection
+4. Placeable object and Consumables
+5. Game over screen
 
 ### Classes
 
