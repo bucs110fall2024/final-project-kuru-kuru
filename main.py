@@ -1,6 +1,10 @@
 import pygame
 #import your controller
 
+SCREEN_WDITH = 1000
+SCREEN_HEIGHT = 1000
+FPS = 60
+
 def main():
     pygame.init()
     #Create an instance on your controller object
