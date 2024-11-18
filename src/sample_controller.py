@@ -1,5 +1,6 @@
 import pygame
 from src.player import Player
+from src.projectile import Projectile
 
 class Controller:
   def __init__(self, screen_width, screen_height, fps):
@@ -31,20 +32,30 @@ class Controller:
   def gameloop(self):
     pygame.display.set_caption("Game")
     
-    player = Player()
+    player = Player(100,100)
+    bullets = []
     
     running = True
     while running:
       self.clock.tick(self.fps)
       
+      mouse_pos = pygame.mouse.get_pos()
+      
       for event in pygame.event.get():
         if event.type == pygame.QUIT:
           running = False
-          
+        if event.type == pygame.KEYDOWN:
+          if event.key == pygame.K_SPACE:
+            bullet = Projectile(player.rect.x, player.rect.centery - 10)
+            bullets.append(bullet)
+            
       self.screen.fill((176, 219, 255))
-      pygame.draw.rect(self.screen, (200,255,200), player)
-      
-      player.movement()
+      player.update(self.screen)
+      for bullet in bullets:
+              self.screen.blit(bullet.image, bullet.rect)
+              bullet.rect.x += bullet.speed
+              if bullet.rect.x > 1000:
+                bullets.remove(bullet)
       
       
       pygame.display.flip()
