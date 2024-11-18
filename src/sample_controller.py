@@ -1,12 +1,19 @@
+import pygame
+from player import Player
 
 class Controller:
-  
-  def __init__(self):
-    pass
+  def __init__(self, screen_width, screen_height, fps):
+    self.screen_width = screen_width
+    self.screen_height = screen_height
+    self.fps = fps
+    self.clock = pygame.time.Clock()
+    self.screen = pygame.display.set_mode(self.screen_width, self.screen_height)
+    
+    self.player = Player()
     #setup pygame data
   
   def mainloop(self):
-    pass
+      self.gameloop()
     #select state loop
     
   
@@ -23,7 +30,24 @@ class Controller:
       #redraw
       
   def gameloop(self):
-    pass
+    pygame.display.set_caption("Game")
+    
+    running = True
+    while running:
+      self.clock.tick(self.fps)
+      
+      for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+          running = False
+          
+      self.screen.fill((176, 219, 255))
+      pygame.draw.rect(self.screen, (200,255,200), self.player)
+      
+      self.player.movement()
+      
+      
+      pygame.display.flip()
+    pygame.quit()
       #event loop
 
       #update data
