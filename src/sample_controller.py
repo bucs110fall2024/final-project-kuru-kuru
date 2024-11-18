@@ -1,5 +1,5 @@
 import pygame
-from player import Player
+from src.player import Player
 
 class Controller:
   def __init__(self, screen_width, screen_height, fps):
@@ -7,9 +7,8 @@ class Controller:
     self.screen_height = screen_height
     self.fps = fps
     self.clock = pygame.time.Clock()
-    self.screen = pygame.display.set_mode(self.screen_width, self.screen_height)
+    self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
     
-    self.player = Player()
     #setup pygame data
   
   def mainloop(self):
@@ -32,6 +31,8 @@ class Controller:
   def gameloop(self):
     pygame.display.set_caption("Game")
     
+    player = Player()
+    
     running = True
     while running:
       self.clock.tick(self.fps)
@@ -41,9 +42,9 @@ class Controller:
           running = False
           
       self.screen.fill((176, 219, 255))
-      pygame.draw.rect(self.screen, (200,255,200), self.player)
+      pygame.draw.rect(self.screen, (200,255,200), player)
       
-      self.player.movement()
+      player.movement()
       
       
       pygame.display.flip()
