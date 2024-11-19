@@ -1,11 +1,13 @@
 import pygame
 
-class Projectile:
-    def __init__(self, x, y):
-        self.image = pygame.Surface((50,20))
-        self.image.fill((255,0,0))
+class Projectile(pygame.sprite.Sprite):
+    def __init__(self, x, y, img_name):
+        super().__init__()
+        self.image = pygame.image.load(img_name).convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = 5
+        self.rect.center = (x, y)
+        self.speed = 10
+            
+    def update(self):
+        pass
         

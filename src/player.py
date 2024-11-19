@@ -1,5 +1,4 @@
 import pygame
-from src.projectile import Projectile
 
 class Player:
     def __init__(self, x, y):
@@ -28,12 +27,6 @@ class Player:
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
         self.rect.center += self.direction * self.speed
-        
-    def shoot(self, screen, bullet_list):
-        for bullet in bullet_list:
-            bullet
-        pass
-        
     
     def update(self, screen):
         pygame.draw.rect(screen, (200,255,200), self)
