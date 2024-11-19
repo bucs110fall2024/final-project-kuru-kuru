@@ -33,14 +33,14 @@ class Controller:
                     self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, "assets/pprojectile.png")
+                        projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, "assets/pprojectile.png", mouse_pos)
                         self.player_projectiles.add(projectile)
+                        
                         
             self.screen.fill((176,219,255))
             self.player.update(self.screen)
             
-            for projectile in self.player_projectiles:
-                projectile.rect.x += projectile.speed
+            self.player_projectiles.update()
             self.player_projectiles.draw(self.screen)
             
             pygame.display.flip()
