@@ -2,6 +2,13 @@ import pygame
 
 class Placeables(pygame.sprite.Sprite):
     def __init__(self, x, y, mouse_pos):
+        """Initializes a placeable sprite and its attributes
+
+        Args:
+            x (int)): x pos
+            y (int): y pos
+            mouse_pos (tuple): mosue pos as (x,y)
+        """
         super().__init__()
         self.image_list = ["assets/rock1.png", "assets/rock2.png", "assets/rock3.png"]
         self.image = pygame.image.load(self.image_list[0]).convert_alpha()
@@ -16,6 +23,11 @@ class Placeables(pygame.sprite.Sprite):
         self.rect.center += self.direction * 100
         
     def update(self, collide_group):
+        """Checks projectile collision with placed object and changes state based on number of collisions
+
+        Args:
+            collide_group (sprite group)
+        """
         if pygame.sprite.spritecollide(self, collide_group, True):
             self.durability -= 1
             if self.durability == 2:

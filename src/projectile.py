@@ -2,6 +2,13 @@ import pygame
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y, mouse_pos):
+        """Initializes a projectile sprite and its attributes
+
+        Args:
+            x (int): initial x pos
+            y (int): initial y pos
+            mouse_pos (tuple): mouse pos as (x,y)
+        """
         super().__init__()
         self.image = pygame.transform.scale_by(pygame.image.load("assets/pprojectile.png").convert_alpha(), 2)
         self.rect = self.image.get_rect()
@@ -13,6 +20,11 @@ class Projectile(pygame.sprite.Sprite):
         self.direction = self.direction.normalize()
             
     def update(self, collide_group):
+        """Updates the projectile pos as well as checking collision
+
+        Args:
+            collide_group (sprite group)
+        """
         self.rect.center += self.direction * self.speed
         if pygame.sprite.spritecollideany(self, collide_group):
             self.kill()
