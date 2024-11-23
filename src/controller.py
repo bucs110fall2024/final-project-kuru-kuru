@@ -22,6 +22,7 @@ class Controller:
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         
         self.player = Player(100,100)
+        self.player_group = pygame.sprite.Group()
         self.player_projectiles = pygame.sprite.Group()
         self.player_placeables = pygame.sprite.Group()
         self.enemy_projectiles = pygame.sprite.Group()
@@ -64,19 +65,17 @@ class Controller:
                             self.enemy_projectiles.add(eprojectile)
                         
             self.screen.fill((176,219,255))
+            self.player_group.add(self.player)
             
-            
-            self.player.update(self.screen)
+            self.player_group.update(mouse_pos, self.player_placeables, self.enemy_projectiles)
             self.player_projectiles.update(self.player_placeables)
             self.player_placeables.update(self.enemy_projectiles)
             self.enemy_projectiles.update()
             
-            
             self.player_projectiles.draw(self.screen)
             self.player_placeables.draw(self.screen)
             self.enemy_projectiles.draw(self.screen)
-            
-            
+            self.player_group.draw(self.screen)
         
             pygame.display.flip()
         pygame.quit()
