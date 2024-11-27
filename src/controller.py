@@ -32,6 +32,8 @@ class Controller:
         self.player_placeables = pygame.sprite.Group()
         self.enemy_projectiles = pygame.sprite.Group()
         
+        self.placeables_cooldown = 3600
+        
     def mainloop(self):
         """Runs the different loops of the program depending on game state
         """
@@ -87,9 +89,10 @@ class Controller:
                         projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
                         self.player_projectiles.add(projectile)
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_SPACE and self.placeables_cooldown >= 3600:
                         placeable = Placeables(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
                         self.player_placeables.add(placeable)
+                        self.placeables_cooldown = 0
                     if event.key == pygame.K_q:
                         for i in range(10):
                             eprojectile = EnemyProjectile(500 - i*25, 500 - i*50, 5)
@@ -108,6 +111,8 @@ class Controller:
             self.enemy_projectiles.draw(self.screen)
             self.player_group.draw(self.screen)
         
+            self.placeables_cooldown += 1
+            print(self.placeables_cooldown)
             pygame.display.flip()
         pygame.quit()
         
