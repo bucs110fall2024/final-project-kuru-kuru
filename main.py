@@ -5,7 +5,7 @@ from src.controller import Controller
 def main():
     pygame.init()
     #Create an instance on your controller object
-    game = Controller(1000, 1000, 60)
+    game = Controller(1024, 1024, 60)
     #Call your mainloop
     game.mainloop()
     ###### NOTHING ELSE SHOULD GO IN main(), JUST THE ABOVE 3 LINES OF CODE ######

@@ -28,5 +28,5 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.center += self.direction * self.speed
         if pygame.sprite.spritecollideany(self, collide_group):
             self.kill()
-        if self.rect.left > 1000 or self.rect.right < 0 or self.rect.top > 1000 or self.rect.bottom < 0:
+        if self.rect.left > 1024 or self.rect.right < 0 or self.rect.top > 1024 or self.rect.bottom < 0:
             self.kill()

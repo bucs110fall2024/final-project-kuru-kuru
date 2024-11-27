@@ -9,9 +9,9 @@ class Player(pygame.sprite.Sprite):
             y (int): sets the player's initial y pos
         """
         super().__init__()
-        self.image = pygame.transform.scale_by(pygame.image.load("assets/player.png").convert_alpha(), 1.5)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x,y)
+        self.image = pygame.image.load("assets/player.png").convert_alpha()
+        self.rect = self.image.get_rect(center = (x, y))
+        
         self.health = 5
         self.speed = 5
         self.direction = pygame.math.Vector2()
@@ -50,8 +50,8 @@ class Player(pygame.sprite.Sprite):
             direction (str): is player moving horizontally or vertically
             collision_group (sprite group)
         """
-        placeables = collision_group.sprites()
-        for placeable in placeables:
+        placeables_list = collision_group.sprites()
+        for placeable in placeables_list:
             if self.rect.colliderect(placeable) and direction == "horizontal":
                 if self.direction.x > 0:
                     self.rect.right = placeable.rect.left
@@ -69,11 +69,22 @@ class Player(pygame.sprite.Sprite):
         Args:
             collision_group (sprite group)
         """
-        if pygame.sprite.spritecollide(self, collision_group, True):
-            self.health -= 1
-            if self.health <=0:
-                self.kill()
+        if pygame.sprite.spritecollideany(self, collision_group):
+            if pygame.sprite.spritecollide(self, collision_group, True, pygame.sprite.collide_mask):
+                self.health -= 1
+                if self.health <= 0:
+                    self.kill()
     
+    def screen_collision(self):
+        if self.rect.right > 1024:
+            self.rect.right = 1024
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.bottom > 1024:
+            self.rect.bottom = 1024
+        if self.rect.top < 0:
+            self.rect.top = 0
+                
     def update(self, mouse_pos, collision_group, collision_group2):
         """Updates the player by drawing the player character and well as calling its movement method and projectile_collision method
 
@@ -83,9 +94,11 @@ class Player(pygame.sprite.Sprite):
             collision_group2 (sprite group): group for projectile collision
         """
         if mouse_pos[0] > self.rect.centerx:
-            self.image = pygame.transform.scale_by(pygame.image.load("assets/player.png").convert_alpha(), 1.5)
+            self.image = pygame.image.load("assets/player.png").convert_alpha()
         if mouse_pos[0] < self.rect.centerx:
-            self.image = pygame.transform.flip(pygame.transform.scale_by(pygame.image.load("assets/player.png").convert_alpha(), 1.5) , True, False)
+            self.image = pygame.transform.flip(pygame.image.load("assets/player.png").convert_alpha(), True, False)
+            
         self.movement(collision_group)
         self.projectile_collision(collision_group2)
+        self.screen_collision()
         
