@@ -72,8 +72,6 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollideany(self, collision_group):
             if pygame.sprite.spritecollide(self, collision_group, True, pygame.sprite.collide_mask):
                 self.health -= 1
-                if self.health <= 0:
-                    self.kill()
     
     def screen_collision(self):
         if self.rect.right > 1024:
@@ -101,4 +99,3 @@ class Player(pygame.sprite.Sprite):
         self.movement(collision_group)
         self.projectile_collision(collision_group2)
         self.screen_collision()
-        
