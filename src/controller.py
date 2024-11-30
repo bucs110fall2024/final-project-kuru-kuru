@@ -10,11 +10,6 @@ from src.button import Button
 class Controller:
     def __init__(self):
         """Initializes many game elements such as the screen, fps, and sprite groups, etc.
-
-        Args:
-            screen_width (int)
-            screen_height (int)
-            fps (int)
         """
         self.screen_width = 1024
         self.screen_height = 1024
@@ -41,6 +36,15 @@ class Controller:
         self.enemy_projectiles = pygame.sprite.Group()
         
         self.placeables_cooldown = 3600
+        
+    def reset(self):
+        """Resets game elements
+        """
+        self.player = Player(500,500)
+        self.player_group.add(self.player)
+        self.player_projectiles.empty()
+        self.player_placeables.empty()
+        self.enemy_projectiles.empty()
         
     def mainloop(self):
         """Runs the different loops of the program depending on game state
@@ -71,10 +75,9 @@ class Controller:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if self.play_button.rect.collidepoint(mouse_pos):
-                            self.game_state = "Game"
                             if self.player.health <= 0:
-                                self.player = Player(500,500)
-                                self.player_group.add(self.player)
+                                self.reset()
+                            self.game_state = "Game"
                         if self.quit_button.rect.collidepoint(mouse_pos):
                             pygame.quit()
                             sys.exit()
@@ -138,14 +141,14 @@ class Controller:
                         self.placeables_cooldown = 0
                     if event.key == pygame.K_q:
                         for i in range(10):
-                            eprojectile = EnemyProjectile(500 - i*25, 500 - i*50, 5)
+                            eprojectile = EnemyProjectile(250 + i*25, 250 + i*50)
                             self.enemy_projectiles.add(eprojectile)
                     if event.key == pygame.K_ESCAPE:
                         self.game_state = "Paused"
             
             self.screen.fill((255,255,255))
+            self.tilemap.draw(self.screen)
             
-            self.tilemap.update(self.screen)
             self.player_group.update(mouse_pos, self.player_placeables, self.enemy_projectiles)
             self.player_projectiles.update(self.player_placeables)
             self.player_placeables.update(self.enemy_projectiles)
@@ -178,8 +181,7 @@ class Controller:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if self.retry_button.rect.collidepoint(mouse_pos):
-                            self.player = Player(800,800)
-                            self.player_group.add(self.player)
+                            self.reset()
                             self.game_state = "Game"
                         if self.menu_button.rect.collidepoint(mouse_pos):
                             self.game_state = "Menu"

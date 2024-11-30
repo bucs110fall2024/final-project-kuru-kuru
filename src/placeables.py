@@ -12,8 +12,7 @@ class Placeables(pygame.sprite.Sprite):
         super().__init__()
         self.image_list = ["assets/rock1.png", "assets/rock2.png", "assets/rock3.png"]
         self.image = pygame.image.load(self.image_list[0]).convert_alpha()
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
+        self.rect = self.image.get_rect(center = (x,y))
         self.durability = 3
         
         self.coord = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.centery)

@@ -11,8 +11,7 @@ class Projectile(pygame.sprite.Sprite):
         """
         super().__init__()
         self.image = pygame.transform.scale_by(pygame.image.load("assets/pprojectile.png").convert_alpha(), 2)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
+        self.rect = self.image.get_rect(center = (x,y))
         self.speed = 20
         
         self.coord = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.centery)

@@ -74,6 +74,8 @@ class Player(pygame.sprite.Sprite):
                 self.health -= 1
     
     def screen_collision(self):
+        """Checks player collision with edge of the screen
+        """
         if self.rect.right > 1024:
             self.rect.right = 1024
         if self.rect.left < 0:

@@ -2,29 +2,36 @@ import pygame
 
 class Tilemap:
     def __init__(self):
+        """Creates a tilemap for the game using a grid system that is 16x16 with each tile being 64 pixels
+        """
         self.grass_tile = pygame.image.load("assets/grass.png")
         self.dirt_tile = pygame.image.load("assets/dirt.png")
         self.tile_size = 64
         self.tile_map = [
-            ["g", "g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "g", "g", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
+            ["g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "d", "d", "g", "g",],
+            ["g", "g", "g", "d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "d", "g", "g",],
+            ["g", "g", "g", "d", "g", "d", "g", "g", "g", "g", "d", "g", "g", "d", "g", "g",],
+            ["g", "g", "g", "d", "g", "d", "g", "g", "g", "g", "d", "g", "g", "d", "d", "d",],
+            ["g", "g", "g", "d", "g", "d", "g", "g", "g", "g", "d", "g", "g", "g", "g", "g",],
+            ["g", "d", "d", "d", "g", "d", "g", "g", "g", "g", "d", "g", "g", "g", "g", "g",],
+            ["d", "d", "g", "g", "g", "d", "g", "g", "g", "g", "d", "g", "g", "g", "g", "g",],
             ["d", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "g", "g", "g", "g", "g", "g", "g", "g", "d", "d", "d", "d", "d", "g", "g",],
-            ["g", "g", "g", "g", "g", "g", "g", "g", "d", "d", "d", "d", "d", "d", "d", "g",],
-            ["g", "g", "g", "g", "g", "g", "g", "g", "d", "d", "g", "g", "g", "g", "d", "d",],
-            ["g", "g", "g", "g", "g", "g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "d",],
-            ["g", "g", "g", "g", "g", "g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g",],
-            ["g", "g", "g", "g", "g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g",],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g",],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "d", "d",],
+            ["g", "g", "g", "g", "d", "g", "g", "g", "g", "g", "g", "d", "g", "g", "d", "g",],
+            ["g", "g", "g", "g", "d", "d", "g", "g", "g", "g", "d", "d", "g", "d", "d", "g",],
+            ["g", "g", "g", "g", "g", "d", "d", "d", "d", "d", "d", "g", "g", "d", "g", "g",],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "d", "d", "g", "g",],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "d", "d", "g", "g", "g",],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "d", "g", "g", "g", "g",],
         ]
         
-    def update(self, screen):
+    def draw(self, screen):
+        """Draws the tilemap on the screen
+
+        Args:
+            screen (pygame surface)
+        """
         for row_index, row in enumerate(self.tile_map):
             for col_index, tile in enumerate(row):
                 x = col_index * self.tile_size
