@@ -4,6 +4,7 @@ from src.player import Player
 from src.projectile import Projectile
 from src.placeables import Placeables
 from src.enemyprojectile import EnemyProjectile
+from src.enemy import Enemy
 from src.tilemap import Tilemap
 from src.button import Button
 
@@ -26,22 +27,26 @@ class Controller:
         self.continue_button = Button(self.screen_width/2 - 150, 300, "assets/continuebutton.png")
         self.retry_button = Button(self.screen_width/2 - 150, 300, "assets/retrybutton.png")
         
-        
         self.tilemap = Tilemap()
-        self.player = Player(200,200)
+        self.player = Player(200, 512)
+        self.enemy = Enemy(768, 512)
         
         self.player_group = pygame.sprite.GroupSingle(self.player)
         self.player_projectiles = pygame.sprite.Group()
         self.player_placeables = pygame.sprite.Group()
         self.enemy_projectiles = pygame.sprite.Group()
+        self.enemy_group = pygame.sprite.GroupSingle(self.enemy)
         
-        self.placeables_cooldown = 3600
+        self.shoot_timer = 30
+        self.placeables_timer = 3600
         
     def reset(self):
         """Resets game elements
         """
-        self.player = Player(500,500)
+        self.player = Player(200, 512)
         self.player_group.add(self.player)
+        self.enemy = Enemy(768, 512)
+        self.enemy_group.add(self.enemy)
         self.player_projectiles.empty()
         self.player_placeables.empty()
         self.enemy_projectiles.empty()
@@ -75,7 +80,7 @@ class Controller:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if self.play_button.rect.collidepoint(mouse_pos):
-                            if self.player.health <= 0:
+                            if self.player.health == 0:
                                 self.reset()
                             self.game_state = "Game"
                         if self.quit_button.rect.collidepoint(mouse_pos):
@@ -131,9 +136,10 @@ class Controller:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
+                    if event.button == 1 and self.shoot_timer >= 30:
                         projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
                         self.player_projectiles.add(projectile)
+                        self.shoot_timer = 0
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE: #and self.placeables_cooldown >= 3600:
                         placeable = Placeables(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
@@ -149,20 +155,22 @@ class Controller:
             self.screen.fill((255,255,255))
             self.tilemap.draw(self.screen)
             
-            self.player_group.update(mouse_pos, self.player_placeables, self.enemy_projectiles)
+            self.player_group.update(mouse_pos, self.player_placeables, self.enemy_projectiles, self.enemy_group)
             self.player_projectiles.update(self.player_placeables)
             self.player_placeables.update(self.enemy_projectiles)
             self.enemy_projectiles.update()
+            self.enemy_group.update(self.player, self.player_projectiles)
             
             self.player_projectiles.draw(self.screen)
             self.player_placeables.draw(self.screen)
             self.enemy_projectiles.draw(self.screen)
             self.player_group.draw(self.screen)
-
+            self.enemy_group.draw(self.screen)
+            
+            self.shoot_timer += 1
             #self.placeables_cooldown += 1
-            #print(self.placeables_cooldown)
             pygame.display.flip()
-        if self.player.health <= 0:
+        if self.player.health == 0:
             self.game_state = "Over"
         
     def gameoverloop(self):

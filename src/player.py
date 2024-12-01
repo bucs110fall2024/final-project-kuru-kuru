@@ -14,6 +14,8 @@ class Player(pygame.sprite.Sprite):
         
         self.health = 5
         self.speed = 5
+        self.i_frame = False
+        self.i_frame_timer = 0
         self.direction = pygame.math.Vector2()
         
     def movement(self, collision_group):
@@ -62,17 +64,29 @@ class Player(pygame.sprite.Sprite):
                     self.rect.bottom = placeable.rect.top
                 if self.direction.y < 0:
                     self.rect.top = placeable.rect.bottom
-                
-    def projectile_collision(self, collision_group):
-        """Determines player collision with enemy projectiles
+
+    def enemy_collision(self, projectile_group, enemy_group):
+        """Determines collision with the enemy and its projectiles
 
         Args:
-            collision_group (sprite group)
+            projectile_group (sprite group)
+            enemy_group (sprite group)
         """
-        if pygame.sprite.spritecollideany(self, collision_group):
-            if pygame.sprite.spritecollide(self, collision_group, True, pygame.sprite.collide_mask):
-                self.health -= 1
-    
+        if not self.i_frame:
+            if pygame.sprite.spritecollideany(self, projectile_group):
+                if pygame.sprite.spritecollide(self, projectile_group, True, pygame.sprite.collide_mask):
+                    self.health -= 1
+                    self.i_frame = True
+            if pygame.sprite.spritecollideany(self, enemy_group):
+                if pygame.sprite.spritecollideany(self, enemy_group, pygame.sprite.collide_mask):
+                    self.health -= 1
+                    self.i_frame = True
+        else:
+            self.i_frame_timer += 1
+            if self.i_frame_timer == 60:
+                self.i_frame = False
+                self.i_frame_timer = 0
+            
     def screen_collision(self):
         """Checks player collision with edge of the screen
         """
@@ -85,7 +99,13 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.rect.top = 0
                 
-    def update(self, mouse_pos, collision_group, collision_group2):
+    def facing_mouse(self, mouse_pos):
+        if mouse_pos[0] > self.rect.centerx:
+            self.image = pygame.image.load("assets/player.png").convert_alpha()
+        if mouse_pos[0] < self.rect.centerx:
+            self.image = pygame.transform.flip(pygame.image.load("assets/player.png").convert_alpha(), True, False)
+            
+    def update(self, mouse_pos, collision_group, collision_group2, collision_group3):
         """Updates the player by drawing the player character and well as calling its movement method and projectile_collision method
 
         Args:
@@ -93,11 +113,7 @@ class Player(pygame.sprite.Sprite):
             collision_group (sprite group): group for block collision
             collision_group2 (sprite group): group for projectile collision
         """
-        if mouse_pos[0] > self.rect.centerx:
-            self.image = pygame.image.load("assets/player.png").convert_alpha()
-        if mouse_pos[0] < self.rect.centerx:
-            self.image = pygame.transform.flip(pygame.image.load("assets/player.png").convert_alpha(), True, False)
-            
+        self.facing_mouse(mouse_pos)
         self.movement(collision_group)
-        self.projectile_collision(collision_group2)
+        self.enemy_collision(collision_group2, collision_group3)
         self.screen_collision()
