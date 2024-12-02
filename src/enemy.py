@@ -20,6 +20,8 @@ class Enemy(pygame.sprite.Sprite):
         self.move_timer = 0
         
     def movement(self):
+        """Defines enemy movement from current pos to a random pos
+        """
         self.move_timer += 1
         if self.move_timer == 300:
             self.moving = True
@@ -33,21 +35,37 @@ class Enemy(pygame.sprite.Sprite):
                 self.moving = False
                 self.move_timer = 0
             
-    def collision(self, collide_group):
-        if pygame.sprite.spritecollideany(self, collide_group):
-            if pygame.sprite.spritecollide(self, collide_group, True, pygame.sprite.collide_mask):
+    def collision(self, collision_group):
+        """Checks enemy collision with player projectiles
+
+        Args:
+            collision_group (sprite group)
+        """
+        if pygame.sprite.spritecollideany(self, collision_group):
+            if pygame.sprite.spritecollide(self, collision_group, True, pygame.sprite.collide_mask):
                 self.health -= 1
                 
     def facing_player(self, player):
+        """Adjusting where enemy is facing depending on where the player is
+
+        Args:
+            player (pygame sprite (rect))
+        """
         if self.rect.centerx > player.rect.centerx:
             self.image =  pygame.transform.flip(pygame.transform.scale_by(pygame.image.load("assets/slime.png").convert_alpha(), 2), True, False)
         if self.rect.centerx < player.rect.centerx:
             self.image = pygame.transform.scale_by(pygame.image.load("assets/slime.png").convert_alpha(), 2)
             
-    def update(self, player, collide_group):
+    def update(self, player, collision_group):
+        """Updates the enemy by calling its movement, collision, and facing methods
+
+        Args:
+            player (pygame sprite (rect))
+            collision_group (sprite group)
+        """
         self.facing_player(player)
         self.movement()
-        self.collision(collide_group)
+        self.collision(collision_group)
         if self.health == 0:
             self.kill()
         

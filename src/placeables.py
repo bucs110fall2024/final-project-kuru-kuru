@@ -21,13 +21,13 @@ class Placeables(pygame.sprite.Sprite):
         
         self.rect.center += self.direction * 100
         
-    def update(self, collide_group):
-        """Checks projectile collision with placed object and changes state based on number of collisions
+    def current_state(self, collision_group):
+        """Checks current state of placed object depending on how many times an enemy projectile hits it
 
         Args:
-            collide_group (sprite group)
+            collision_group (sprite group)
         """
-        if pygame.sprite.spritecollide(self, collide_group, True):
+        if pygame.sprite.spritecollide(self, collision_group, True):
             self.durability -= 1
             if self.durability == 2:
                 self.image = pygame.image.load(self.image_list[1]).convert_alpha()
@@ -35,4 +35,12 @@ class Placeables(pygame.sprite.Sprite):
                 self.image = pygame.image.load(self.image_list[2]).convert_alpha()
             else:
                 self.kill()
+        
+    def update(self, collision_group):
+        """Updates the placed object by calling its current state method
+
+        Args:
+            collision_group (sprite group)
+        """
+        self.current_state(collision_group)
         

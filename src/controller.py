@@ -21,12 +21,12 @@ class Controller:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         
-        self.play_button = Button(self.screen_width/2 - 150, 300, "assets/playbutton.png")
-        self.quit_button = Button(self.screen_width/2 - 150, 500, "assets/quitbutton.png")
-        self.menu_button = Button(self.screen_width/2 - 150, 500, "assets/menubutton.png")
-        self.continue_button = Button(self.screen_width/2 - 150, 300, "assets/continuebutton.png")
-        self.retry_button = Button(self.screen_width/2 - 150, 300, "assets/retrybutton.png")
-        self.new_game_button = Button(self.screen_width/2 - 150, 400, "assets/newgamebutton.png")
+        self.play_button = Button(self.screen_width/2, 325, "assets/playbutton.png")
+        self.quit_button = Button(self.screen_width/2, 575, "assets/quitbutton.png")
+        self.menu_button = Button(self.screen_width/2, 575, "assets/menubutton.png")
+        self.continue_button = Button(self.screen_width/2, 325, "assets/continuebutton.png")
+        self.retry_button = Button(self.screen_width/2, 450, "assets/retrybutton.png")
+        self.new_game_button = Button(self.screen_width/2, 450, "assets/newgamebutton.png")
         
         self.tilemap = Tilemap()
         self.enemy = Enemy(768, 512)
@@ -44,6 +44,20 @@ class Controller:
         self.shoot_timer = 0
         self.place_timer = 0
         self.heal_timer = 0
+        
+    def create_text(self, text_msg, text_color, text_bg_color, pos):
+        """Creates text on the screen based on the given parameters
+
+        Args:
+            text_msg (str)
+            text_color (tuple)
+            text_bg_color (tuple)
+            pos (tuple)
+        """
+        text = self.font.render(text_msg, True, text_color, text_bg_color)
+        text_rect = text.get_rect(center = pos)
+        self.screen.blit(text, text_rect)
+        
         
     def reset(self):
         """Resets game elements
@@ -91,6 +105,7 @@ class Controller:
                                 self.game_state = "Game"
                             else:
                                 print("Click New Game")
+                                
                         if self.new_game_button.rect.collidepoint(mouse_pos):
                             self.reset()
                             self.game_state = "Game"
@@ -124,12 +139,16 @@ class Controller:
                     if event.button == 1:
                         if self.continue_button.rect.collidepoint(mouse_pos): 
                             self.game_state = "Game"
+                        if self.retry_button.rect.collidepoint(mouse_pos):
+                            self.reset()
+                            self.game_state = "Game"
                         if self.menu_button.rect.collidepoint(mouse_pos):
                             self.game_state = "Menu"
                             
             self.screen.fill((126,169,205))
             
             self.continue_button.draw(self.screen)
+            self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
             
             pygame.display.flip()
@@ -186,6 +205,11 @@ class Controller:
             self.enemy_projectiles.draw(self.screen)
             self.player_group.draw(self.screen)
             self.enemy_group.draw(self.screen)
+        
+            self.create_text(f"Boss Health: {self.enemy.health}", (0,0,0), (255,255,255), (512,700))
+            self.create_text(f"Player Health: {self.player.health}", (0,0,0), (255,255,255), (512,600))
+            if self.enemy.health == 0:
+                self.create_text("You Win!", (0,0,0), (255,255,255), (512,512))
             
             if not self.can_shoot:
                 self.shoot_timer += 1

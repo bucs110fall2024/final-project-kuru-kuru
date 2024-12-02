@@ -40,6 +40,7 @@ class Player(pygame.sprite.Sprite):
         
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
+            
         self.rect.x += self.direction.x * self.speed
         self.block_collision("horizontal", collision_group)
         self.rect.y += self.direction.y * self.speed
@@ -100,13 +101,18 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
                 
     def facing_mouse(self, mouse_pos):
+        """Adjust where player is facing based on where the mouse is
+
+        Args:
+            mouse_pos (tuple): x, y pos of mouse pointer
+        """
         if mouse_pos[0] > self.rect.centerx:
             self.image = pygame.image.load("assets/player.png").convert_alpha()
         if mouse_pos[0] < self.rect.centerx:
             self.image = pygame.transform.flip(pygame.image.load("assets/player.png").convert_alpha(), True, False)
             
     def update(self, mouse_pos, collision_group, collision_group2, collision_group3):
-        """Updates the player by drawing the player character and well as calling its movement method and projectile_collision method
+        """Updates the player by calling its movement, collision, and facing methods
 
         Args:
             mouse_pos (tuple)
