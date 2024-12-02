@@ -26,19 +26,24 @@ class Controller:
         self.menu_button = Button(self.screen_width/2 - 150, 500, "assets/menubutton.png")
         self.continue_button = Button(self.screen_width/2 - 150, 300, "assets/continuebutton.png")
         self.retry_button = Button(self.screen_width/2 - 150, 300, "assets/retrybutton.png")
+        self.new_game_button = Button(self.screen_width/2 - 150, 400, "assets/newgamebutton.png")
         
         self.tilemap = Tilemap()
-        self.player = Player(200, 512)
         self.enemy = Enemy(768, 512)
         
-        self.player_group = pygame.sprite.GroupSingle(self.player)
+        self.player_group = pygame.sprite.GroupSingle()
         self.player_projectiles = pygame.sprite.Group()
         self.player_placeables = pygame.sprite.Group()
         self.enemy_projectiles = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.GroupSingle(self.enemy)
         
-        self.shoot_timer = 30
-        self.placeables_timer = 3600
+        self.can_shoot = True
+        self.can_place = True
+        self.can_heal = True
+        
+        self.shoot_timer = 0
+        self.place_timer = 0
+        self.heal_timer = 0
         
     def reset(self):
         """Resets game elements
@@ -80,8 +85,15 @@ class Controller:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if self.play_button.rect.collidepoint(mouse_pos):
-                            if self.player.health == 0:
-                                self.reset()
+                            player_exist = getattr(self, "player", None)
+                            if player_exist:
+                                if self.player.health == 0:
+                                    self.reset()
+                                self.game_state = "Game"
+                            else:
+                                print("Click New Game")
+                        if self.new_game_button.rect.collidepoint(mouse_pos):
+                            self.reset()
                             self.game_state = "Game"
                         if self.quit_button.rect.collidepoint(mouse_pos):
                             pygame.quit()
@@ -90,6 +102,7 @@ class Controller:
             self.screen.fill((176,219,255))
             
             self.play_button.draw(self.screen)
+            self.new_game_button.draw(self.screen)
             self.quit_button.draw(self.screen)
             
             pygame.display.flip()
@@ -135,23 +148,31 @@ class Controller:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1 and self.shoot_timer >= 30:
-                        projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
-                        self.player_projectiles.add(projectile)
-                        self.shoot_timer = 0
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE: #and self.placeables_cooldown >= 3600:
+                    if event.key == pygame.K_SPACE and self.can_place:
                         placeable = Placeables(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
                         self.player_placeables.add(placeable)
-                        self.placeables_cooldown = 0
+                        self.can_place = False
+                        self.place_timer = 0
                     if event.key == pygame.K_q:
                         for i in range(10):
                             eprojectile = EnemyProjectile(250 + i*25, 250 + i*50)
                             self.enemy_projectiles.add(eprojectile)
+                    if event.key == pygame.K_e and self.can_heal:
+                        self.player.health += 2
+                        if self.player.health > 5:
+                            self.player.health = 5
+                        self.can_heal = False
+                        self.heal_timer = 0
                     if event.key == pygame.K_ESCAPE:
                         self.game_state = "Paused"
-            
+                        
+            if pygame.mouse.get_pressed()[0] and self.can_shoot:
+                    projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
+                    self.player_projectiles.add(projectile)
+                    self.can_shoot = False
+                    self.shoot_timer = 0
+                    
             self.screen.fill((255,255,255))
             self.tilemap.draw(self.screen)
             
@@ -167,9 +188,21 @@ class Controller:
             self.player_group.draw(self.screen)
             self.enemy_group.draw(self.screen)
             
-            self.shoot_timer += 1
-            #self.placeables_cooldown += 1
+            if not self.can_shoot:
+                self.shoot_timer += 1
+                if self.shoot_timer == 30:
+                    self.can_shoot = True
+            if not self.can_place:
+                self.place_timer += 1
+                if self.place_timer == 300:
+                    self.can_place = True
+            if not self.can_heal:
+                self.heal_timer += 1
+                if self.heal_timer == 600:
+                    self.can_heal = True
+                    
             pygame.display.flip()
+            
         if self.player.health == 0:
             self.game_state = "Over"
         

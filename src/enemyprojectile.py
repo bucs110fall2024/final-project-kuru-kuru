@@ -8,10 +8,9 @@ class EnemyProjectile(pygame.sprite.Sprite):
         Args:
             x (int): initial x pos
             y (int): initial y pos
-            t (int): parametric variable to change projectile pos (Work in Progress)
         """
         super().__init__()
-        self.image = pygame.transform.scale_by(pygame.image.load("assets/eprojectile.png").convert_alpha(), 2)
+        self.image = pygame.transform.scale_by(pygame.image.load("assets/enemyprojectile.png").convert_alpha(), 2)
         self.rect = self.image.get_rect(center = (x,y))
         self.speed = 15
         

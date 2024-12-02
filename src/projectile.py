@@ -10,7 +10,7 @@ class Projectile(pygame.sprite.Sprite):
             mouse_pos (tuple): mouse pos as (x,y)
         """
         super().__init__()
-        self.image = pygame.transform.scale_by(pygame.image.load("assets/pprojectile.png").convert_alpha(), 2)
+        self.image = pygame.transform.scale_by(pygame.image.load("assets/playerprojectile.png").convert_alpha(), 2)
         self.rect = self.image.get_rect(center = (x,y))
         self.speed = 20
         
