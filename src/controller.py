@@ -84,9 +84,8 @@ class Controller:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        if self.play_button.rect.collidepoint(mouse_pos):
-                            player_exist = getattr(self, "player", None)
-                            if player_exist:
+                        if self.play_button.rect.collidepoint(mouse_pos): 
+                            if getattr(self, "player", None):
                                 if self.player.health == 0:
                                     self.reset()
                                 self.game_state = "Game"
