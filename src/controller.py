@@ -45,7 +45,7 @@ class Controller:
         self.place_timer = 0
         self.heal_timer = 0
         
-    def create_text(self, text_msg, text_color, text_bg_color, pos):
+    def create_text(self, text_msg, pos, text_color, text_bg_color = None):
         """Creates text on the screen based on the given parameters
 
         Args:
@@ -57,7 +57,6 @@ class Controller:
         text = self.font.render(text_msg, True, text_color, text_bg_color)
         text_rect = text.get_rect(center = pos)
         self.screen.blit(text, text_rect)
-        
         
     def reset(self):
         """Resets game elements
@@ -119,9 +118,10 @@ class Controller:
             self.new_game_button.draw(self.screen)
             self.quit_button.draw(self.screen)
             
+            self.create_text("Main Menu", (512, 100), (0,0,0))
+            
             pygame.display.flip()
         
-    
     def gamepauseloop(self):
         """Runs the game pause loop when player pauses the game
         """
@@ -150,6 +150,8 @@ class Controller:
             self.continue_button.draw(self.screen)
             self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
+            
+            self.create_text("Game Paused", (512, 100), (0,0,0))
             
             pygame.display.flip()
     
@@ -206,10 +208,12 @@ class Controller:
             self.player_group.draw(self.screen)
             self.enemy_group.draw(self.screen)
         
-            self.create_text(f"Boss Health: {self.enemy.health}", (0,0,0), (255,255,255), (512,700))
-            self.create_text(f"Player Health: {self.player.health}", (0,0,0), (255,255,255), (512,600))
+            self.create_text(f"Boss Health: {self.enemy.health}", (512,700), (0,0,0))
+            health_bar = pygame.rect.Rect(362, 800, 3 * self.enemy.health, 25)
+            pygame.draw.rect(self.screen, (255,0,0), health_bar)
+            self.create_text(f"Player Health: {self.player.health}", (200,50), (0,0,0))
             if self.enemy.health == 0:
-                self.create_text("You Win!", (0,0,0), (255,255,255), (512,512))
+                self.create_text("You Win!", (512,512), (0,0,0), (255,255,255))
             
             if not self.can_shoot:
                 self.shoot_timer += 1
@@ -254,5 +258,7 @@ class Controller:
             
             self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
+            
+            self.create_text("Game Over", (0,0,0), None, (512, 100))
             
             pygame.display.flip()
