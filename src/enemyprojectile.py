@@ -1,8 +1,7 @@
 import pygame
-import math
 
 class EnemyProjectile(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, speed):
         """Initializes enemy projectiles and its attributes
 
         Args:
@@ -12,11 +11,15 @@ class EnemyProjectile(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.scale_by(pygame.image.load("assets/enemyprojectile.png").convert_alpha(), 2)
         self.rect = self.image.get_rect(center = (x,y))
-        self.speed = 15
+        self.speed = speed
+        self.vector = pygame.math.Vector2()
+        
+    def angle(self, iteration):
+        self.vector = pygame.math.Vector2((1,0)).rotate(0 + 90 * iteration)
         
     def update(self):
         """Updates projectile pos and boundary collision
         """
-        self.rect.center += pygame.math.Vector2((1/2, 0)) * self.speed
+        self.rect.center += self.vector * self.speed
         if self.rect.left > 1024 or self.rect.right < 0 or self.rect.top > 1024 or self.rect.bottom < 0:
             self.kill()

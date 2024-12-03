@@ -13,7 +13,7 @@ class Placeables(pygame.sprite.Sprite):
         self.image_list = ["assets/rock1.png", "assets/rock2.png", "assets/rock3.png"]
         self.image = pygame.image.load(self.image_list[0]).convert_alpha()
         self.rect = self.image.get_rect(center = (x,y))
-        self.durability = 3
+        self.durability = 6
         
         self.coord = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.centery)
         self.direction = pygame.math.Vector2(self.coord)
@@ -29,9 +29,11 @@ class Placeables(pygame.sprite.Sprite):
         """
         if pygame.sprite.spritecollide(self, collision_group, True):
             self.durability -= 1
-            if self.durability == 2:
+            if self.durability >= 5:
+                self.image = self.image
+            elif 3 <= self.durability <= 4:
                 self.image = pygame.image.load(self.image_list[1]).convert_alpha()
-            elif self.durability == 1:
+            elif 1 <= self.durability <= 2:
                 self.image = pygame.image.load(self.image_list[2]).convert_alpha()
             else:
                 self.kill()

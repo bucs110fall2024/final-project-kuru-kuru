@@ -4,6 +4,7 @@ from src.player import Player
 from src.projectile import Projectile
 from src.placeables import Placeables
 from src.enemyprojectile import EnemyProjectile
+from src.spawner import Spawner
 from src.enemy import Enemy
 from src.tilemap import Tilemap
 from src.button import Button
@@ -30,6 +31,8 @@ class Controller:
         
         self.tilemap = Tilemap()
         self.enemy = Enemy(768, 512)
+        self.spawner = Spawner(90, 5)
+        self.spawner2 = Spawner(60, 3)
         
         self.player_group = pygame.sprite.GroupSingle()
         self.player_projectiles = pygame.sprite.Group()
@@ -174,10 +177,6 @@ class Controller:
                         self.player_placeables.add(placeable)
                         self.can_place = False
                         self.place_timer = 0
-                    if event.key == pygame.K_q:
-                        for i in range(10):
-                            eprojectile = EnemyProjectile(250 + i*25, 250 + i*50)
-                            self.enemy_projectiles.add(eprojectile)
                     if event.key == pygame.K_e and self.can_heal:
                         self.player.health += 2
                         if self.player.health > 5:
@@ -207,11 +206,15 @@ class Controller:
             self.enemy_projectiles.draw(self.screen)
             self.player_group.draw(self.screen)
             self.enemy_group.draw(self.screen)
+            
+            self.spawner.shoot(self.enemy_projectiles, self.enemy.rect.centerx, self.enemy.rect.centery)
+            self.spawner2.shoot(self.enemy_projectiles, 200,200)
         
             self.create_text(f"Boss Health: {self.enemy.health}", (512,700), (0,0,0))
             health_bar = pygame.rect.Rect(362, 800, 3 * self.enemy.health, 25)
             pygame.draw.rect(self.screen, (255,0,0), health_bar)
             self.create_text(f"Player Health: {self.player.health}", (200,50), (0,0,0))
+            
             if self.enemy.health == 0:
                 self.create_text("You Win!", (512,512), (0,0,0), (255,255,255))
             
@@ -221,7 +224,7 @@ class Controller:
                     self.can_shoot = True
             if not self.can_place:
                 self.place_timer += 1
-                if self.place_timer == 300:
+                if self.place_timer == 60:
                     self.can_place = True
             if not self.can_heal:
                 self.heal_timer += 1
@@ -259,6 +262,6 @@ class Controller:
             self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
             
-            self.create_text("Game Over", (0,0,0), None, (512, 100))
+            self.create_text("Game Over", (512, 100), (0,0,0))
             
             pygame.display.flip()
