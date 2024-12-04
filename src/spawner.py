@@ -6,15 +6,16 @@ class Spawner:
         self.rect = pygame.Rect(0, 0, 10, 10)
         self.rotation = rotation
         self.spawn_count = spawn_count
+        self.vector = pygame.math.Vector2((1,0))
         
         self.timer = 0
         self.fire_rate = 0.3
         
     def ready(self, projectile_group):
-        self.vector = pygame.math.Vector2((1,0))
+        self.vector = self.vector.rotate(self.rotation)
         for i in range(self.spawn_count):
             self.projectile = EnemyProjectile(self.rect.x, self.rect.y, 15)
-            self.projectile.vector = pygame.math.Vector2((1,0)).rotate(360/self.spawn_count * i)
+            self.projectile.vector = self.vector.rotate(360/self.spawn_count * i)
             projectile_group.add(self.projectile)
             
     def shoot(self, projectile_group, x, y):

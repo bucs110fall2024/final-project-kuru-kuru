@@ -31,8 +31,7 @@ class Controller:
         
         self.tilemap = Tilemap()
         self.enemy = Enemy(768, 512)
-        self.spawner = Spawner(90, 5)
-        self.spawner2 = Spawner(60, 3)
+        self.spawner = Spawner(60, 4)
         
         self.player_group = pygame.sprite.GroupSingle()
         self.player_projectiles = pygame.sprite.Group()
@@ -208,7 +207,6 @@ class Controller:
             self.enemy_group.draw(self.screen)
             
             self.spawner.shoot(self.enemy_projectiles, self.enemy.rect.centerx, self.enemy.rect.centery)
-            self.spawner2.shoot(self.enemy_projectiles, 200,200)
         
             self.create_text(f"Boss Health: {self.enemy.health}", (512,700), (0,0,0))
             health_bar = pygame.rect.Rect(362, 800, 3 * self.enemy.health, 25)
