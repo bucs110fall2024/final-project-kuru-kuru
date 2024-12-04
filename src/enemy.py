@@ -1,5 +1,6 @@
 import pygame
 import random
+from src.spawner import Spawner
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -18,6 +19,10 @@ class Enemy(pygame.sprite.Sprite):
         self.moving = False
         self.move_timer = 0
         
+        self.main_spawner = Spawner(self.rect.centerx, self.rect.centery, 25, 4, 0.1)
+        self.spawner2 = Spawner(200, 300, 25, 2, 0.1)
+        self.spawner3 = Spawner(700, 650, 15, 1, 0.1)
+        
     def movement(self):
         """Defines enemy movement from current pos to a random pos
         """
@@ -33,6 +38,28 @@ class Enemy(pygame.sprite.Sprite):
             if 0 <= abs(self.next_pos_x - self.rect.centerx) <= 10 or 0 <= abs(self.next_pos_y - self.rect.centery) <= 10:
                 self.moving = False
                 self.move_timer = 0
+                
+    def attack(self, projectile_group):
+        """Defines enemy attack patterns
+
+        Args:
+            projectile_group (sprite group)
+        """
+        self.main_spawner.rect.x = self.rect.centerx
+        self.main_spawner.rect.y = self.rect.centery
+        self.main_spawner.shoot(projectile_group, 10)
+        if 50 < self.health <= 75:
+            self.main_spawner.rotation = 25
+            self.main_spawner.spawn_count = 6
+        if 25 < self.health <= 50:
+            self.main_spawner.rotation = 35
+            self.main_spawner.spawn_count = 3
+            self.spawner2.shoot(projectile_group, 10)
+        if self.health <= 25:
+            self.main_spawner.rotation = 50
+            self.main_spawner.spawn_count = 5
+            self.spawner2.shoot(projectile_group, 5)
+            self.spawner3.shoot(projectile_group, 10)
             
     def collision(self, collision_group):
         """Checks enemy collision with player projectiles
@@ -55,7 +82,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.rect.centerx < player.rect.centerx:
             self.image = pygame.transform.scale_by(pygame.image.load("assets/slime.png").convert_alpha(), 2)
             
-    def update(self, player, collision_group):
+    def update(self, player, collision_group, projectile_group):
         """Updates the enemy by calling its movement, collision, and facing methods
 
         Args:
@@ -64,6 +91,7 @@ class Enemy(pygame.sprite.Sprite):
         """
         self.facing_player(player)
         self.movement()
+        self.attack(projectile_group)
         self.collision(collision_group)
         if self.health == 0:
             self.kill()

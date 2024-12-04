@@ -31,7 +31,6 @@ class Controller:
         
         self.tilemap = Tilemap()
         self.enemy = Enemy(768, 512)
-        self.spawner = Spawner(60, 4)
         
         self.player_group = pygame.sprite.GroupSingle()
         self.player_projectiles = pygame.sprite.Group()
@@ -195,23 +194,23 @@ class Controller:
             self.tilemap.draw(self.screen)
             
             self.player_group.update(mouse_pos, self.player_placeables, self.enemy_projectiles, self.enemy_group)
-            self.player_projectiles.update(self.player_placeables)
             self.player_placeables.update(self.enemy_projectiles)
+            self.player_projectiles.update()
             self.enemy_projectiles.update()
-            self.enemy_group.update(self.player, self.player_projectiles)
+            self.enemy_group.update(self.player, self.player_projectiles, self.enemy_projectiles)
             
-            self.player_projectiles.draw(self.screen)
             self.player_placeables.draw(self.screen)
+            self.player_projectiles.draw(self.screen)
             self.enemy_projectiles.draw(self.screen)
             self.player_group.draw(self.screen)
             self.enemy_group.draw(self.screen)
-            
-            self.spawner.shoot(self.enemy_projectiles, self.enemy.rect.centerx, self.enemy.rect.centery)
         
             self.create_text(f"Boss Health: {self.enemy.health}", (512,700), (0,0,0))
             health_bar = pygame.rect.Rect(362, 800, 3 * self.enemy.health, 25)
             pygame.draw.rect(self.screen, (255,0,0), health_bar)
             self.create_text(f"Player Health: {self.player.health}", (200,50), (0,0,0))
+            self.create_text(f"Place CD: {round(((60 - self.place_timer)/60), 1)}s", (200,800), (0,0,0))
+            self.create_text(f"Heal CD: {round(((600 - self.heal_timer)/60), 1)}s", (200,900), (0,0,0))
             
             if self.enemy.health == 0:
                 self.create_text("You Win!", (512,512), (0,0,0), (255,255,255))

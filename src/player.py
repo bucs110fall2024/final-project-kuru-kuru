@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = (x, y))
         
         self.health = 5
-        self.speed = 5
+        self.speed = 7
         self.i_frame = False
         self.i_frame_timer = 0
         self.direction = pygame.math.Vector2()
@@ -121,5 +121,5 @@ class Player(pygame.sprite.Sprite):
         """
         self.facing_mouse(mouse_pos)
         self.movement(collision_group)
-        self.enemy_collision(collision_group2, collision_group3)
+        #self.enemy_collision(collision_group2, collision_group3)
         self.screen_collision()

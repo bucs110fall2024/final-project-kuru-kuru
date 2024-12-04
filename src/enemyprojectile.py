@@ -7,15 +7,13 @@ class EnemyProjectile(pygame.sprite.Sprite):
         Args:
             x (int): initial x pos
             y (int): initial y pos
+            speed (int)
         """
         super().__init__()
         self.image = pygame.transform.scale_by(pygame.image.load("assets/enemyprojectile.png").convert_alpha(), 2)
         self.rect = self.image.get_rect(center = (x,y))
         self.speed = speed
         self.vector = pygame.math.Vector2()
-        
-    def angle(self, iteration):
-        self.vector = pygame.math.Vector2((1,0)).rotate(0 + 90 * iteration)
         
     def update(self):
         """Updates projectile pos and boundary collision
