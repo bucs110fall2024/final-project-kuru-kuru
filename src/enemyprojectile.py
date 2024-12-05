@@ -10,7 +10,7 @@ class EnemyProjectile(pygame.sprite.Sprite):
             speed (int)
         """
         super().__init__()
-        self.image = pygame.transform.scale_by(pygame.image.load("assets/enemyprojectile.png").convert_alpha(), 2)
+        self.image = pygame.transform.scale_by(pygame.image.load("assets/game-sprites/enemyprojectile.png").convert_alpha(), 2)
         self.rect = self.image.get_rect(center = (x,y))
         self.speed = speed
         self.vector = pygame.math.Vector2()

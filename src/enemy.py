@@ -11,7 +11,7 @@ class Enemy(pygame.sprite.Sprite):
             y (int): initial y pos
         """
         super().__init__()
-        self.image = pygame.transform.scale_by(pygame.image.load("assets/slime.png").convert_alpha(), 2)
+        self.image = pygame.transform.scale_by(pygame.image.load("assets/game-sprites/slime.png").convert_alpha(), 2)
         self.rect = self.image.get_rect(center = (x,y))
         
         self.health = 100
@@ -78,9 +78,9 @@ class Enemy(pygame.sprite.Sprite):
             player (pygame sprite (rect))
         """
         if self.rect.centerx > player.rect.centerx:
-            self.image =  pygame.transform.flip(pygame.transform.scale_by(pygame.image.load("assets/slime.png").convert_alpha(), 2), True, False)
+            self.image =  pygame.transform.flip(pygame.transform.scale_by(pygame.image.load("assets/game-sprites/slime.png").convert_alpha(), 2), True, False)
         if self.rect.centerx < player.rect.centerx:
-            self.image = pygame.transform.scale_by(pygame.image.load("assets/slime.png").convert_alpha(), 2)
+            self.image = pygame.transform.scale_by(pygame.image.load("assets/game-sprites/slime.png").convert_alpha(), 2)
             
     def update(self, player, collision_group, projectile_group):
         """Updates the enemy by calling its movement, collision, and facing methods

@@ -4,8 +4,8 @@ class Tilemap:
     def __init__(self):
         """Creates a tilemap for the game using a grid system that is 16x16 with each tile being 64 pixels
         """
-        self.grass_tile = pygame.image.load("assets/grass.png")
-        self.dirt_tile = pygame.image.load("assets/dirt.png")
+        self.grass_tile = pygame.image.load("assets/misc/grass.png")
+        self.dirt_tile = pygame.image.load("assets/misc/dirt.png")
         self.tile_size = 64
         self.tile_map = [
             ["g", "g", "d", "d", "g", "g", "g", "g", "g", "g", "g", "g", "d", "d", "g", "g",],

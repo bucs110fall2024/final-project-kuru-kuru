@@ -3,8 +3,6 @@ import sys
 from src.player import Player
 from src.projectile import Projectile
 from src.placeables import Placeables
-from src.enemyprojectile import EnemyProjectile
-from src.spawner import Spawner
 from src.enemy import Enemy
 from src.tilemap import Tilemap
 from src.button import Button
@@ -16,18 +14,19 @@ class Controller:
         self.screen_width = 1024
         self.screen_height = 1024
         self.fps = 60
-        self.font = pygame.font.SysFont("Arial", 50)
+        self.menu_font = pygame.font.SysFont("Arial", 75)
+        self.game_font = pygame.font.SysFont("Arial", 25)
         self.game_state = "Menu"
         
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         
-        self.play_button = Button(self.screen_width/2, 325, "assets/playbutton.png")
-        self.quit_button = Button(self.screen_width/2, 575, "assets/quitbutton.png")
-        self.menu_button = Button(self.screen_width/2, 575, "assets/menubutton.png")
-        self.continue_button = Button(self.screen_width/2, 325, "assets/continuebutton.png")
-        self.retry_button = Button(self.screen_width/2, 450, "assets/retrybutton.png")
-        self.new_game_button = Button(self.screen_width/2, 450, "assets/newgamebutton.png")
+        self.play_button = Button(self.screen_width/2, 325, "assets/buttons/playbutton.png", 1)
+        self.quit_button = Button(self.screen_width/2, 575, "assets/buttons/quitbutton.png", 1)
+        self.menu_button = Button(self.screen_width/2, 575, "assets/buttons/menubutton.png", 1)
+        self.continue_button = Button(self.screen_width/2, 325, "assets/buttons/continuebutton.png", 1)
+        self.retry_button = Button(self.screen_width/2, 450, "assets/buttons/retrybutton.png", 1)
+        self.new_game_button = Button(self.screen_width/2, 450, "assets/buttons/newgamebutton.png", 1)
         
         self.tilemap = Tilemap()
         self.enemy = Enemy(768, 512)
@@ -38,6 +37,10 @@ class Controller:
         self.enemy_projectiles = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.GroupSingle(self.enemy)
         
+        self.gun_icon = Button(self.screen_width/2 - 50, 1000, "assets/misc/gun.png", 2)
+        self.block_icon = Button(self.screen_width/2, 1000, "assets/misc/block.png", 2)
+        self.potion_icon = Button(self.screen_width/2 + 50, 1000, "assets/misc/potion.png", 2)
+        
         self.can_shoot = True
         self.can_place = True
         self.can_heal = True
@@ -46,7 +49,7 @@ class Controller:
         self.place_timer = 0
         self.heal_timer = 0
         
-    def create_text(self, text_msg, pos, text_color, text_bg_color = None):
+    def create_text(self, font_type, text_msg, pos, text_color, text_bg_color = None):
         """Creates text on the screen based on the given parameters
 
         Args:
@@ -55,9 +58,14 @@ class Controller:
             text_bg_color (tuple)
             pos (tuple)
         """
-        text = self.font.render(text_msg, True, text_color, text_bg_color)
-        text_rect = text.get_rect(center = pos)
-        self.screen.blit(text, text_rect)
+        if font_type == "Main":
+            text = self.menu_font.render(text_msg, True, text_color, text_bg_color)
+            text_rect = text.get_rect(center = pos)
+            self.screen.blit(text, text_rect)
+        if font_type == "Game":
+            text = self.game_font.render(text_msg, True, text_color, text_bg_color)
+            text_rect = text.get_rect(center = pos)
+            self.screen.blit(text, text_rect)
         
     def reset(self):
         """Resets game elements
@@ -69,6 +77,10 @@ class Controller:
         self.player_projectiles.empty()
         self.player_placeables.empty()
         self.enemy_projectiles.empty()
+        self.can_place = True
+        self.can_heal = True
+        self.place_timer = 0
+        self.heal_timer = 0
         
     def mainloop(self):
         """Runs the different loops of the program depending on game state
@@ -100,7 +112,7 @@ class Controller:
                     if event.button == 1:
                         if self.play_button.rect.collidepoint(mouse_pos): 
                             if getattr(self, "player", None):
-                                if self.player.health == 0:
+                                if self.player.health == 0 or self.enemy.health == 0:
                                     self.reset()
                                 self.game_state = "Game"
                             else:
@@ -119,7 +131,7 @@ class Controller:
             self.new_game_button.draw(self.screen)
             self.quit_button.draw(self.screen)
             
-            self.create_text("Main Menu", (512, 100), (0,0,0))
+            self.create_text("Main", "Main Menu", (512, 100), (0,0,0))
             
             pygame.display.flip()
         
@@ -152,7 +164,7 @@ class Controller:
             self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
             
-            self.create_text("Game Paused", (512, 100), (0,0,0))
+            self.create_text("Main", "Game Paused", (512, 100), (0,0,0))
             
             pygame.display.flip()
     
@@ -204,16 +216,25 @@ class Controller:
             self.enemy_projectiles.draw(self.screen)
             self.player_group.draw(self.screen)
             self.enemy_group.draw(self.screen)
+            
+            self.gun_icon.draw(self.screen)
+            self.block_icon.draw(self.screen)
+            self.potion_icon.draw(self.screen)
         
-            self.create_text(f"Boss Health: {self.enemy.health}", (512,700), (0,0,0))
-            health_bar = pygame.rect.Rect(362, 800, 3 * self.enemy.health, 25)
+            health_bar = pygame.rect.Rect(362, 800, 3 * self.enemy.health, 30)
             pygame.draw.rect(self.screen, (255,0,0), health_bar)
-            self.create_text(f"Player Health: {self.player.health}", (200,50), (0,0,0))
-            self.create_text(f"Place CD: {round(((60 - self.place_timer)/60), 1)}s", (200,800), (0,0,0))
-            self.create_text(f"Heal CD: {round(((600 - self.heal_timer)/60), 1)}s", (200,900), (0,0,0))
+            
+            self.create_text("Game", f"Boss Health: {self.enemy.health}", (512, 815), (255,255,255))
+            self.create_text("Game", f"Player Health: {self.player.health}", (100, 50), (0,0,0))
+            
+            if not self.can_place:
+                self.create_text("Game", f"{round(((60 - self.place_timer)/60), 1)}s", (self.block_icon.rect.center), (255,255,255))
+            if not self.can_heal:
+                self.create_text("Game", f"{round(((600 - self.heal_timer)/60), 1)}s", (self.potion_icon.rect.center), (255,255,255))
             
             if self.enemy.health == 0:
-                self.create_text("You Win!", (512,512), (0,0,0), (255,255,255))
+                self.create_text("Main", "You Win!", (512, 512), (0,0,0), (255,255,255))
+                self.enemy_projectiles.empty()
             
             if not self.can_shoot:
                 self.shoot_timer += 1
@@ -259,6 +280,6 @@ class Controller:
             self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
             
-            self.create_text("Game Over", (512, 100), (0,0,0))
+            self.create_text("Main", "Game Over", (512, 100), (0,0,0))
             
             pygame.display.flip()

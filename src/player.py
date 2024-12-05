@@ -9,11 +9,11 @@ class Player(pygame.sprite.Sprite):
             y (int): sets the player's initial y pos
         """
         super().__init__()
-        self.image = pygame.image.load("assets/player.png").convert_alpha()
+        self.image = pygame.image.load("assets/game-sprites/player.png").convert_alpha()
         self.rect = self.image.get_rect(center = (x, y))
         
         self.health = 5
-        self.speed = 7
+        self.speed = 6
         self.i_frame = False
         self.i_frame_timer = 0
         self.direction = pygame.math.Vector2()
@@ -84,7 +84,7 @@ class Player(pygame.sprite.Sprite):
                     self.i_frame = True
         else:
             self.i_frame_timer += 1
-            if self.i_frame_timer == 60:
+            if self.i_frame_timer == 120:
                 self.i_frame = False
                 self.i_frame_timer = 0
             
@@ -107,9 +107,9 @@ class Player(pygame.sprite.Sprite):
             mouse_pos (tuple): x, y pos of mouse pointer
         """
         if mouse_pos[0] > self.rect.centerx:
-            self.image = pygame.image.load("assets/player.png").convert_alpha()
+            self.image = pygame.image.load("assets/game-sprites/player.png").convert_alpha()
         if mouse_pos[0] < self.rect.centerx:
-            self.image = pygame.transform.flip(pygame.image.load("assets/player.png").convert_alpha(), True, False)
+            self.image = pygame.transform.flip(pygame.image.load("assets/game-sprites/player.png").convert_alpha(), True, False)
             
     def update(self, mouse_pos, collision_group, collision_group2, collision_group3):
         """Updates the player by calling its movement, collision, and facing methods
@@ -121,5 +121,5 @@ class Player(pygame.sprite.Sprite):
         """
         self.facing_mouse(mouse_pos)
         self.movement(collision_group)
-        #self.enemy_collision(collision_group2, collision_group3)
+        self.enemy_collision(collision_group2, collision_group3)
         self.screen_collision()

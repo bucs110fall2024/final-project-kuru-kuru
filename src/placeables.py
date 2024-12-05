@@ -10,7 +10,7 @@ class Placeables(pygame.sprite.Sprite):
             mouse_pos (tuple): mosue pos as (x,y)
         """
         super().__init__()
-        self.image_list = ["assets/rock1.png", "assets/rock2.png", "assets/rock3.png"]
+        self.image_list = ["assets/game-sprites/rock1.png", "assets/game-sprites/rock2.png", "assets/game-sprites/rock3.png"]
         self.image = pygame.image.load(self.image_list[0]).convert_alpha()
         self.rect = self.image.get_rect(center = (x,y))
         self.durability = 6
