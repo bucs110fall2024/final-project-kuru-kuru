@@ -49,21 +49,21 @@ class Enemy(pygame.sprite.Sprite):
         """
         self.main_spawner.rect.x = self.rect.centerx
         self.main_spawner.rect.y = self.rect.centery
-        self.main_spawner.shoot(projectile_group, 10, 1.5)
+        self.main_spawner.shoot(projectile_group, 8, 1.5)
         if 50 < self.health <= 75:
             self.main_spawner.rotation = 25
             self.main_spawner.spawn_count = 6
         if 25 < self.health <= 50:
             self.main_spawner.rotation = 35
             self.main_spawner.spawn_count = 3
-            self.mini_spawner.shoot(projectile_group, 10, 1.5)
+            self.mini_spawner.shoot(projectile_group, 8, 1.5)
         if self.health <= 25:
             self.main_spawner.rotation = 50
             self.main_spawner.spawn_count = 5
             self.mini_spawner.shoot(projectile_group, 5, 1.5)
             self.mini_spawner2.rect.x = self.rect.centerx
             self.mini_spawner2.rect.y = self.rect.centery
-            self.mini_spawner2.shoot(projectile_group, 10, 1.5)
+            self.mini_spawner2.shoot(projectile_group, 8, 1.5)
             
     def collision(self, collision_group):
         """Checks enemy collision with player projectiles

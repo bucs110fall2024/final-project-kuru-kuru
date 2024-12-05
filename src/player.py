@@ -109,8 +109,12 @@ class Player(pygame.sprite.Sprite):
         """
         if mouse_pos[0] > self.rect.centerx:
             self.image = pygame.image.load("assets/game-sprites/player.png").convert_alpha()
+            if self.i_frame:
+                self.image = pygame.image.load("assets/game-sprites/player-hurt.png").convert_alpha()
         if mouse_pos[0] < self.rect.centerx:
             self.image = pygame.transform.flip(pygame.image.load("assets/game-sprites/player.png").convert_alpha(), True, False)
+            if self.i_frame:
+                self.image = pygame.transform.flip(pygame.image.load("assets/game-sprites/player-hurt.png").convert_alpha(), True, False)
             
     def update(self, mouse_pos, collision_group, collision_group2, collision_group3):
         """Updates the player by calling its movement, collision, and facing methods

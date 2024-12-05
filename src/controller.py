@@ -19,8 +19,6 @@ class Controller:
         self.game_font = pygame.font.SysFont("Arial", 25)
         self.game_state = "Menu"
         self.error = False
-        #self.game_begin = False
-        #self.start_timer = 180
         
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -43,9 +41,9 @@ class Controller:
         
         self.current_deathcount = 0
         
-        self.gun_icon = Button(self.screen_width/2 - 50, 1000, "assets/misc/gun.png", 2)
-        self.block_icon = Button(self.screen_width/2, 1000, "assets/misc/block.png", 2)
-        self.potion_icon = Button(self.screen_width/2 + 50, 1000, "assets/misc/potion.png", 2)
+        self.gun_icon = Button(self.screen_width/2 - 50, 980, "assets/misc/gun.png", 2)
+        self.block_icon = Button(self.screen_width/2, 980, "assets/misc/block.png", 2)
+        self.potion_icon = Button(self.screen_width/2 + 50, 980, "assets/misc/potion.png", 2)
         
         self.can_shoot = True
         self.can_place = True
@@ -258,11 +256,11 @@ class Controller:
             health_bar = pygame.rect.Rect(362, 800, 3 * self.enemy.health, 30)
             pygame.draw.rect(self.screen, (255,0,0), health_bar)
             
-            self.create_text("Game", f"Boss Health: {self.enemy.health}", (512, 815), (255,255,255))
-            self.create_text("Game", f"Player Health: {self.player.health}", (100, 50), (0,0,0))
+            self.create_text("Game", f"Boss HP: {self.enemy.health}", (512, 815), (255,255,255))
+            self.create_text("Game", f"Player HP: {self.player.health}", (75, 50), (0,0,0))
             
             if not self.can_place:
-                self.create_text("Game", f"{round(((60 - self.place_timer)/60), 1)}s", (self.block_icon.rect.center), (255,255,255))
+                self.create_text("Game", f"{round(((180 - self.place_timer)/60), 1)}s", (self.block_icon.rect.center), (255,255,255))
             if not self.can_heal:
                 self.create_text("Game", f"{round(((600 - self.heal_timer)/60), 1)}s", (self.potion_icon.rect.center), (255,255,255))
             
@@ -276,7 +274,7 @@ class Controller:
                     self.can_shoot = True
             if not self.can_place:
                 self.place_timer += 1
-                if self.place_timer == 60:
+                if self.place_timer == 180:
                     self.can_place = True
             if not self.can_heal:
                 self.heal_timer += 1
