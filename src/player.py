@@ -16,6 +16,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 6
         self.i_frame = False
         self.i_frame_timer = 0
+        self.i_frame_length = 90
         self.direction = pygame.math.Vector2()
         
     def movement(self, collision_group):
@@ -84,7 +85,7 @@ class Player(pygame.sprite.Sprite):
                     self.i_frame = True
         else:
             self.i_frame_timer += 1
-            if self.i_frame_timer == 120:
+            if self.i_frame_timer == self.i_frame_length:
                 self.i_frame = False
                 self.i_frame_timer = 0
             

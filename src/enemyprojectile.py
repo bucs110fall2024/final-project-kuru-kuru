@@ -1,17 +1,19 @@
 import pygame
 
 class EnemyProjectile(pygame.sprite.Sprite):
-    def __init__(self, x, y, speed):
+    def __init__(self, x, y, speed, scale):
         """Initializes enemy projectiles and its attributes
 
         Args:
             x (int): initial x pos
             y (int): initial y pos
             speed (int)
+            scale (float)
         """
         super().__init__()
-        self.image = pygame.transform.scale_by(pygame.image.load("assets/game-sprites/enemyprojectile.png").convert_alpha(), 2)
+        self.image = pygame.transform.scale_by(pygame.image.load("assets/game-sprites/enemyprojectile.png").convert_alpha(), scale)
         self.rect = self.image.get_rect(center = (x,y))
+        
         self.speed = speed
         self.vector = pygame.math.Vector2()
         

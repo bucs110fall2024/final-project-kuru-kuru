@@ -1,5 +1,6 @@
 import pygame
 import sys
+import json
 from src.player import Player
 from src.projectile import Projectile
 from src.placeables import Placeables
@@ -17,6 +18,9 @@ class Controller:
         self.menu_font = pygame.font.SysFont("Arial", 75)
         self.game_font = pygame.font.SysFont("Arial", 25)
         self.game_state = "Menu"
+        self.error = False
+        #self.game_begin = False
+        #self.start_timer = 180
         
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -29,13 +33,15 @@ class Controller:
         self.new_game_button = Button(self.screen_width/2, 450, "assets/buttons/newgamebutton.png", 1)
         
         self.tilemap = Tilemap()
-        self.enemy = Enemy(768, 512)
+        self.enemy = Enemy(900, 512, 2)
         
         self.player_group = pygame.sprite.GroupSingle()
         self.player_projectiles = pygame.sprite.Group()
         self.player_placeables = pygame.sprite.Group()
         self.enemy_projectiles = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.GroupSingle(self.enemy)
+        
+        self.current_deathcount = 0
         
         self.gun_icon = Button(self.screen_width/2 - 50, 1000, "assets/misc/gun.png", 2)
         self.block_icon = Button(self.screen_width/2, 1000, "assets/misc/block.png", 2)
@@ -66,13 +72,17 @@ class Controller:
             text = self.game_font.render(text_msg, True, text_color, text_bg_color)
             text_rect = text.get_rect(center = pos)
             self.screen.blit(text, text_rect)
+            
+    def begin_game(self):
+        self.game_begin = False
+        self.start_timer = 180
         
     def reset(self):
         """Resets game elements
         """
         self.player = Player(200, 512)
         self.player_group.add(self.player)
-        self.enemy = Enemy(768, 512)
+        self.enemy = Enemy(900, 512, 2)
         self.enemy_group.add(self.enemy)
         self.player_projectiles.empty()
         self.player_placeables.empty()
@@ -110,21 +120,33 @@ class Controller:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        if self.play_button.rect.collidepoint(mouse_pos): 
-                            if getattr(self, "player", None):
-                                if self.player.health == 0 or self.enemy.health == 0:
-                                    self.reset()
-                                self.game_state = "Game"
-                            else:
-                                print("Click New Game")
-                                
-                        if self.new_game_button.rect.collidepoint(mouse_pos):
+                        if self.new_game_button.rect.collidepoint(mouse_pos) and not self.error:
+                            file = open("src/deathcount.json")
+                            deathcount_info = json.load(file)
+                            file.close()
+                            deathcount_info["deathcount"]["previous_player"] = deathcount_info["deathcount"]["current_player"]
+                            deathcount_info["deathcount"]["current_player"] = 0
+                            file = open("src/deathcount.json", "w")
+                            json.dump(deathcount_info, file)
+                            file.close()
+                            
                             self.reset()
+                            self.begin_game()
                             self.game_state = "Game"
-                        if self.quit_button.rect.collidepoint(mouse_pos):
+                        if self.quit_button.rect.collidepoint(mouse_pos) and not self.error:
                             pygame.quit()
                             sys.exit()
                             
+                        self.error = False
+                        if self.play_button.rect.collidepoint(mouse_pos) and not self.error: 
+                            if getattr(self, "player", None):
+                                if self.player.health == 0 or self.enemy.health == 0:
+                                    self.reset()
+                                self.begin_game()
+                                self.game_state = "Game"
+                            else:
+                                self.error = True
+                        
             self.screen.fill((176,219,255))
             
             self.play_button.draw(self.screen)
@@ -132,7 +154,10 @@ class Controller:
             self.quit_button.draw(self.screen)
             
             self.create_text("Main", "Main Menu", (512, 100), (0,0,0))
-            
+            if self.error:
+                self.create_text("Main", "No Player Data, Click New Game", (512, 300), (255,255,255), (0,0,0))
+                self.create_text("Main", "Click anywhere to close message", (512, 380), (255,255,255), (0,0,0))
+                    
             pygame.display.flip()
         
     def gamepauseloop(self):
@@ -150,9 +175,11 @@ class Controller:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        if self.continue_button.rect.collidepoint(mouse_pos): 
+                        if self.continue_button.rect.collidepoint(mouse_pos):
+                            self.begin_game()
                             self.game_state = "Game"
                         if self.retry_button.rect.collidepoint(mouse_pos):
+                            self.begin_game()
                             self.reset()
                             self.game_state = "Game"
                         if self.menu_button.rect.collidepoint(mouse_pos):
@@ -182,12 +209,12 @@ class Controller:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE and self.can_place:
-                        placeable = Placeables(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
+                    if event.key == pygame.K_SPACE and self.can_place and self.game_begin:
+                        placeable = Placeables(self.player.rect.centerx, self.player.rect.centery, mouse_pos, 1.5)
                         self.player_placeables.add(placeable)
                         self.can_place = False
                         self.place_timer = 0
-                    if event.key == pygame.K_e and self.can_heal:
+                    if event.key == pygame.K_e and self.can_heal and self.game_begin:
                         self.player.health += 2
                         if self.player.health > 5:
                             self.player.health = 5
@@ -196,8 +223,8 @@ class Controller:
                     if event.key == pygame.K_ESCAPE:
                         self.game_state = "Paused"
                         
-            if pygame.mouse.get_pressed()[0] and self.can_shoot:
-                    projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
+            if pygame.mouse.get_pressed()[0] and self.can_shoot and self.game_begin:
+                    projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos, 1.5)
                     self.player_projectiles.add(projectile)
                     self.can_shoot = False
                     self.shoot_timer = 0
@@ -205,11 +232,18 @@ class Controller:
             self.screen.fill((255,255,255))
             self.tilemap.draw(self.screen)
             
-            self.player_group.update(mouse_pos, self.player_placeables, self.enemy_projectiles, self.enemy_group)
-            self.player_placeables.update(self.enemy_projectiles)
-            self.player_projectiles.update()
-            self.enemy_projectiles.update()
-            self.enemy_group.update(self.player, self.player_projectiles, self.enemy_projectiles)
+            if not self.game_begin:
+                self.create_text("Main", f"{-(-self.start_timer//60)}", (512, 512), (255,255,255))
+                self.start_timer -= 1
+                if self.start_timer == 0:
+                    self.game_begin = True
+        
+            if self.game_begin:
+                self.player_group.update(mouse_pos, self.player_placeables, self.enemy_projectiles, self.enemy_group)
+                self.player_placeables.update(self.enemy_projectiles)
+                self.player_projectiles.update()
+                self.enemy_projectiles.update()
+                self.enemy_group.update(self.player, self.player_projectiles, self.enemy_projectiles)
             
             self.player_placeables.draw(self.screen)
             self.player_projectiles.draw(self.screen)
@@ -252,6 +286,15 @@ class Controller:
             pygame.display.flip()
             
         if self.player.health == 0:
+            file = open("src/deathcount.json")
+            deathcount_info = json.load(file)
+            file.close()
+            deathcount_info["deathcount"]["current_player"] += 1
+            self.current_deathcount = deathcount_info["deathcount"]["current_player"]
+            file = open("src/deathcount.json", "w")
+            json.dump(deathcount_info, file)
+            file.close()
+            
             self.game_state = "Over"
         
     def gameoverloop(self):
@@ -271,6 +314,7 @@ class Controller:
                     if event.button == 1:
                         if self.retry_button.rect.collidepoint(mouse_pos):
                             self.reset()
+                            self.begin_game()
                             self.game_state = "Game"
                         if self.menu_button.rect.collidepoint(mouse_pos):
                             self.game_state = "Menu"
@@ -281,5 +325,6 @@ class Controller:
             self.menu_button.draw(self.screen)
             
             self.create_text("Main", "Game Over", (512, 100), (0,0,0))
+            self.create_text("Main", f"Death Count: {self.current_deathcount}", (512, 800), (0,0,0))
             
             pygame.display.flip()
