@@ -1,7 +1,7 @@
 import pygame
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x = 200, y = 512):
         """Initializes the player character and their attributes
 
         Args:

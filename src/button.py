@@ -1,7 +1,7 @@
 import pygame
 
 class Button:
-    def __init__(self, x, y, img_name, scale):
+    def __init__(self, x, y, img_name, scale = 1):
         """Creates a button with its img, and its center at x, y
 
         Args:

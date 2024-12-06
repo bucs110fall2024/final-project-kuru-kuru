@@ -3,7 +3,7 @@ import random
 from src.spawner import Spawner
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
+    def __init__(self, x = 900, y = 512, scale = 2):
         """Initializes enemy and its attributes
 
         Args:
@@ -21,9 +21,9 @@ class Enemy(pygame.sprite.Sprite):
         self.moving = False
         self.move_timer = 0
         
-        self.main_spawner = Spawner(self.rect.centerx, self.rect.centery, 25, 4, 0.1)
-        self.mini_spawner = Spawner(200, 300, 25, 2, 0.1)
-        self.mini_spawner2 = Spawner(self.rect.centerx, self.rect.centery, 15, 1, 0.1)
+        self.main_spawner = Spawner(self.rect.centerx, self.rect.centery)
+        self.mini_spawner = Spawner(200, 300, 25, 2)
+        self.mini_spawner2 = Spawner(self.rect.centerx, self.rect.centery, 15, 1)
         
     def movement(self):
         """Defines enemy movement from current pos to a random pos
@@ -49,21 +49,21 @@ class Enemy(pygame.sprite.Sprite):
         """
         self.main_spawner.rect.x = self.rect.centerx
         self.main_spawner.rect.y = self.rect.centery
-        self.main_spawner.shoot(projectile_group, 8, 1.5)
+        self.main_spawner.shoot(projectile_group)
         if 50 < self.health <= 75:
             self.main_spawner.rotation = 25
             self.main_spawner.spawn_count = 6
         if 25 < self.health <= 50:
             self.main_spawner.rotation = 35
             self.main_spawner.spawn_count = 3
-            self.mini_spawner.shoot(projectile_group, 8, 1.5)
+            self.mini_spawner.shoot(projectile_group)
         if self.health <= 25:
             self.main_spawner.rotation = 50
             self.main_spawner.spawn_count = 5
-            self.mini_spawner.shoot(projectile_group, 5, 1.5)
+            self.mini_spawner.shoot(projectile_group, 5)
             self.mini_spawner2.rect.x = self.rect.centerx
             self.mini_spawner2.rect.y = self.rect.centery
-            self.mini_spawner2.shoot(projectile_group, 8, 1.5)
+            self.mini_spawner2.shoot(projectile_group)
             
     def collision(self, collision_group):
         """Checks enemy collision with player projectiles

@@ -1,7 +1,7 @@
 import pygame
 
 class EnemyProjectile(pygame.sprite.Sprite):
-    def __init__(self, x, y, speed, scale):
+    def __init__(self, x, y, speed = 8, scale = 1.5):
         """Initializes enemy projectiles and its attributes
 
         Args:

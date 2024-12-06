@@ -2,7 +2,7 @@ import pygame
 from src.enemyprojectile import EnemyProjectile
 
 class Spawner:
-    def __init__(self, x, y, rotation, spawn_count, fire_rate):
+    def __init__(self, x, y, rotation = 25, spawn_count = 4, fire_rate = 0.1):
         """Creates a spawner and its attributes
 
         Args:
@@ -21,7 +21,7 @@ class Spawner:
         self.vector = pygame.math.Vector2((0,1))
         self.timer = 0
         
-    def create(self, projectile_group, speed, scale):
+    def create(self, projectile_group, speed = 8, scale = 1.5):
         """Creates the projectiles through iteration and rotation
 
         Args:
@@ -35,7 +35,7 @@ class Spawner:
             self.projectile.vector = self.vector.rotate(360/self.spawn_count * i)
             projectile_group.add(self.projectile)
             
-    def shoot(self, projectile_group, speed, scale):
+    def shoot(self, projectile_group, speed = 8, scale = 1.5):
         """Shoots the created projectiles
 
         Args:

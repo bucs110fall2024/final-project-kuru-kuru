@@ -1,6 +1,3 @@
-
-:warning: Everything between << >> needs to be replaced (remove << >> after replacing)
-
 # Dodge and Shoot (Badly)
 ## CS110 Final Project  Fall, 2024
 
@@ -38,7 +35,24 @@ A game where the player fight a boss while dodging its attacks. The player can p
 
 ### Classes
 
-- << You should have a list of each of your classes with a description >>
+- Controller:
+  - Contains all the code to make the game functional. Handles majorly of pygame event loops, game loops, timers, etc.
+- Player:
+  - Handles player interaction with the game such as movement and collision.
+- Projectile:
+  - Handles player projectile movement and direction.
+- Placeables:
+  - Handes player placed obstacles collision and damaged state.
+- Enemy:
+  - Handles enemy movement, attack patterns, and collision with player projectiles.
+- EnemyProjectile:
+  - Handles enemy projectile movement.
+- Spawner:
+  - Handles enemy projectile spawning and direction. It is what gives the enemy attack patterns.
+- Tilemap:
+  - Creates the tilemap for the game using a grid system.
+- Button:
+  - Loads button images and draw them onscreen.
 
 ## ATP
 

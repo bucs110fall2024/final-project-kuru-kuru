@@ -18,20 +18,23 @@ class Controller:
         self.menu_font = pygame.font.SysFont("Arial", 75)
         self.game_font = pygame.font.SysFont("Arial", 25)
         self.game_state = "Menu"
-        self.error = False
+        self.popup = False
+        self.error_msg = False
+        self.guide_msg = False
         
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         
-        self.play_button = Button(self.screen_width/2, 325, "assets/buttons/playbutton.png", 1)
-        self.quit_button = Button(self.screen_width/2, 575, "assets/buttons/quitbutton.png", 1)
-        self.menu_button = Button(self.screen_width/2, 575, "assets/buttons/menubutton.png", 1)
-        self.continue_button = Button(self.screen_width/2, 325, "assets/buttons/continuebutton.png", 1)
-        self.retry_button = Button(self.screen_width/2, 450, "assets/buttons/retrybutton.png", 1)
-        self.new_game_button = Button(self.screen_width/2, 450, "assets/buttons/newgamebutton.png", 1)
+        self.play_button = Button(self.screen_width/2, 325, "assets/buttons/playbutton.png")
+        self.quit_button = Button(self.screen_width/2, 700, "assets/buttons/quitbutton.png")
+        self.menu_button = Button(self.screen_width/2, 575, "assets/buttons/menubutton.png")
+        self.continue_button = Button(self.screen_width/2, 325, "assets/buttons/continuebutton.png")
+        self.retry_button = Button(self.screen_width/2, 450, "assets/buttons/retrybutton.png")
+        self.new_game_button = Button(self.screen_width/2, 450, "assets/buttons/newgamebutton.png")
+        self.howtoplay_button = Button(self.screen_width/2, 575, "assets/buttons/howtoplaybutton.png")
         
         self.tilemap = Tilemap()
-        self.enemy = Enemy(900, 512, 2)
+        self.enemy = Enemy()
         
         self.player_group = pygame.sprite.GroupSingle()
         self.player_projectiles = pygame.sprite.Group()
@@ -72,15 +75,17 @@ class Controller:
             self.screen.blit(text, text_rect)
             
     def begin_game(self):
+        """Sets the attributes for the countdown to unpause the game
+        """
         self.game_begin = False
         self.start_timer = 180
         
     def reset(self):
         """Resets game elements
         """
-        self.player = Player(200, 512)
+        self.player = Player()
         self.player_group.add(self.player)
-        self.enemy = Enemy(900, 512, 2)
+        self.enemy = Enemy()
         self.enemy_group.add(self.enemy)
         self.player_projectiles.empty()
         self.player_placeables.empty()
@@ -118,7 +123,7 @@ class Controller:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        if self.new_game_button.rect.collidepoint(mouse_pos) and not self.error:
+                        if self.new_game_button.rect.collidepoint(mouse_pos) and not self.popup:
                             file = open("src/deathcount.json")
                             deathcount_info = json.load(file)
                             file.close()
@@ -131,30 +136,44 @@ class Controller:
                             self.reset()
                             self.begin_game()
                             self.game_state = "Game"
-                        if self.quit_button.rect.collidepoint(mouse_pos) and not self.error:
+                        if self.quit_button.rect.collidepoint(mouse_pos) and not self.popup:
                             pygame.quit()
                             sys.exit()
                             
-                        self.error = False
-                        if self.play_button.rect.collidepoint(mouse_pos) and not self.error: 
+                        self.popup = False
+                        if self.play_button.rect.collidepoint(mouse_pos) and not self.popup: 
                             if getattr(self, "player", None):
                                 if self.player.health == 0 or self.enemy.health == 0:
                                     self.reset()
                                 self.begin_game()
                                 self.game_state = "Game"
                             else:
-                                self.error = True
+                                self.popup = True
+                                self.error_msg = True
+                                self.guide_msg = False
+                        if self.howtoplay_button.rect.collidepoint(mouse_pos) and not self.popup:
+                            self.popup = True
+                            self.guide_msg = True
+                            self.error_msg = False
                         
             self.screen.fill((176,219,255))
             
             self.play_button.draw(self.screen)
             self.new_game_button.draw(self.screen)
+            self.howtoplay_button.draw(self.screen)
             self.quit_button.draw(self.screen)
             
-            self.create_text("Main", "Main Menu", (512, 100), (0,0,0))
-            if self.error:
-                self.create_text("Main", "No Player Data, Click New Game", (512, 300), (255,255,255), (0,0,0))
-                self.create_text("Main", "Click anywhere to close message", (512, 380), (255,255,255), (0,0,0))
+            self.create_text("Main", "Main Menu", (512, 100), (247,216,77))
+            if self.popup:
+                if self.error_msg:
+                    self.create_text("Main", "No Player Data, Click New Game", (512, 680), (247,216,77), (177,147,204))
+                    self.create_text("Main", "Click anywhere to close", (512, 760), (247,216,77), (177,147,204))
+                if self.guide_msg:
+                    self.create_text("Main", "Left mouse button to shoot", (512, 400), (247,216,77), (177,147,204))
+                    self.create_text("Main", "Space to place blocks", (512, 480), (247,216,77), (177,147,204))
+                    self.create_text("Main", "E to heal", (512, 560), (247,216,77), (177,147,204))
+                    self.create_text("Main", "Dodge and survive", (512, 640), (247,216,77), (177,147,204))
+                    self.create_text("Main", "Click anywhere to close", (512, 725), (247,216,77), (177,147,204))
                     
             pygame.display.flip()
         
@@ -189,7 +208,7 @@ class Controller:
             self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
             
-            self.create_text("Main", "Game Paused", (512, 100), (0,0,0))
+            self.create_text("Main", "Game Paused", (512, 100), (247,216,77))
             
             pygame.display.flip()
     
@@ -208,7 +227,7 @@ class Controller:
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE and self.can_place and self.game_begin:
-                        placeable = Placeables(self.player.rect.centerx, self.player.rect.centery, mouse_pos, 1.5)
+                        placeable = Placeables(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
                         self.player_placeables.add(placeable)
                         self.can_place = False
                         self.place_timer = 0
@@ -222,7 +241,7 @@ class Controller:
                         self.game_state = "Paused"
                         
             if pygame.mouse.get_pressed()[0] and self.can_shoot and self.game_begin:
-                    projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos, 1.5)
+                    projectile = Projectile(self.player.rect.centerx, self.player.rect.centery, mouse_pos)
                     self.player_projectiles.add(projectile)
                     self.can_shoot = False
                     self.shoot_timer = 0
@@ -265,7 +284,7 @@ class Controller:
                 self.create_text("Game", f"{round(((600 - self.heal_timer)/60), 1)}s", (self.potion_icon.rect.center), (255,255,255))
             
             if self.enemy.health == 0:
-                self.create_text("Main", "You Win!", (512, 512), (0,0,0), (255,255,255))
+                self.create_text("Main", "You Win!", (512, 512), (255,255,255))
                 self.enemy_projectiles.empty()
             
             if not self.can_shoot:
@@ -322,7 +341,7 @@ class Controller:
             self.retry_button.draw(self.screen)
             self.menu_button.draw(self.screen)
             
-            self.create_text("Main", "Game Over", (512, 100), (0,0,0))
-            self.create_text("Main", f"Death Count: {self.current_deathcount}", (512, 800), (0,0,0))
+            self.create_text("Main", "Game Over", (512, 100), (247,216,77))
+            self.create_text("Main", f"Death Count: {self.current_deathcount}", (512, 800), (247,216,77))
             
             pygame.display.flip()

@@ -1,7 +1,7 @@
 import pygame
 
 class Projectile(pygame.sprite.Sprite):
-    def __init__(self, x, y, mouse_pos, scale):
+    def __init__(self, x, y, mouse_pos, scale = 1.5):
         """Initializes a projectile sprite and its attributes
 
         Args:
